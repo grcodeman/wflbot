@@ -23,7 +23,7 @@ class aclient(discord.Client):
 
     async def on_ready(self):
         if not self.synced:
-            await tree.sync()
+            await tree.sync(guild = discord.Object(id = 1004183670086713445))
             self.synced = True
         print(f"We have logged in as {self.user}.")
 
@@ -33,7 +33,7 @@ tree = app_commands.CommandTree(client)
 # To restrict to main server use as a command argument: , guild=discord.Object(id=guild)
 
 # roll command
-@tree.command(name="roll", description="Roll a height using the IBL odds")
+@tree.command(name="roll", description="Roll a height using the IBL odds", guild=discord.Object(id=guild))
 @app_commands.choices(archetype=[
     app_commands.Choice(name="Tiny", value="tiny"),
     app_commands.Choice(name="Normal", value="normal"),
