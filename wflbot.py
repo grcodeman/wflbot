@@ -23,7 +23,7 @@ class aclient(discord.Client):
 
     async def on_ready(self):
         if not self.synced:
-            await tree.sync(guild = discord.Object(id = 1004183670086713445))
+            await tree.sync(guild = discord.Object(id = guild))
             self.synced = True
         print(f"We have logged in as {self.user}.")
 
