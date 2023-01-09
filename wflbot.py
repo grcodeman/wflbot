@@ -7,6 +7,11 @@ from wfltoken import get_guild
 from wfltoken import get_general
 from wfltoken import get_botcommands
 
+from wfldb import add_playerid
+from wfldb import get_playerid
+
+from submitform import submit_ac
+
 from heightroll import roll_height
 
 guild = get_guild()
@@ -15,6 +20,8 @@ botcommands = get_botcommands()
 
 # for stats
 default_season = 1
+
+link_perms = ["395724838620102658","1002315735730770060"]
 
 class aclient(discord.Client):
     def __init__(self):
@@ -44,5 +51,28 @@ async def roll(interaction: discord.Interaction, archetype: app_commands.Choice[
     await interaction.response.defer()
     await asyncio.sleep(1)
     await interaction.followup.send(roll_height(archetype.value))
+
+# link command
+@tree.command(name="link", description="Admin can link user account to player id", guild=discord.Object(id=guild))
+async def self(interaction: discord.Interaction, player: str, user: discord.Member):
+    await interaction.response.defer()
+    if (str(interaction.user.id) in link_perms):
+        disc_id = str(user.id)
+        player_id = str(player)
+        add_playerid(disc_id, player_id)
+        await interaction.followup.send("Linked: `" + disc_id + "` to `" + player_id + "`")
+    else:
+        await interaction.followup.send("You do not have permission to use this command.")
+
+# ac command
+@tree.command(name="ac", description="Submit an Activity Check (Weekly Checkin)", guild=discord.Object(id=guild))
+async def self(interaction: discord.Interaction):
+    await interaction.response.defer()
+    player = get_playerid(str(interaction.user.id))
+    if (player != "Error"):
+        await interaction.followup.send(submit_ac(interaction.user.id, player, (interaction.user.name + "#" + interaction.user.discriminator)))
+    else:
+        await interaction.followup.send("This account has not been linked yet.")
+
 
 client.run(get_token())

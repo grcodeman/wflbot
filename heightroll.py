@@ -35,4 +35,3 @@ def roll_height (arch):
     result = rand_arch + arch.capitalize() + " - " + str(math.floor(height[0] / 12)) + "\'" + str(height[0] % 12)
     return result
 
-print(roll_height("random"))
