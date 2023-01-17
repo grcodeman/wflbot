@@ -14,6 +14,8 @@ from submitform import submit_ac
 
 from heightroll import roll_height
 
+from wflbank import grab_bal
+
 guild = get_guild()
 general = get_general()
 botcommands = get_botcommands()
@@ -74,5 +76,17 @@ async def self(interaction: discord.Interaction):
     else:
         await interaction.followup.send("This account has not been linked yet.")
 
+# bal command
+@tree.command(name="bal", description="View a players Balance and AC Status", guild=discord.Object(id=guild))
+async def self(interaction: discord.Interaction, player: str=None):
+    await interaction.response.defer()
+    if (player == None):
+        player = get_playerid(str(interaction.user.id))
+    if (player != "Error"):
+        info = grab_bal(int(player))
+        info = info.split(",")
+        await interaction.followup.send("**" + info[2] + " (" + str(player) + ")** \nBal: " + info[0] + "UP\nAC: " + info[1])
+    else:
+        await interaction.followup.send("This account has not been linked yet.")
 
 client.run(get_token())
