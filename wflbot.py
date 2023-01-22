@@ -14,7 +14,7 @@ from submitform import submit_ac
 
 from heightroll import roll_height
 
-from wflbank import grab_bal
+from wflbank import grab_bal, grab_teambal
 
 guild = get_guild()
 general = get_general()
@@ -77,16 +77,53 @@ async def self(interaction: discord.Interaction):
         await interaction.followup.send("This account has not been linked yet.")
 
 # bal command
-@tree.command(name="bal", description="View a players Balance and AC Status", guild=discord.Object(id=guild))
+@tree.command(name="bal", description="View a player's Balance and AC Status", guild=discord.Object(id=guild))
 async def self(interaction: discord.Interaction, player: str=None):
     await interaction.response.defer()
     if (player == None):
         player = get_playerid(str(interaction.user.id))
     if (player != "Error"):
-        info = grab_bal(int(player))
-        info = info.split(",")
-        await interaction.followup.send("**" + info[2] + " (" + str(player) + ")** \nBal: " + info[0] + "UP\nAC: " + info[1])
+        try:
+            info = grab_bal(int(player))
+            info = info.split(",")
+            await interaction.followup.send("**" + info[2] + " (" + str(player) + ")** \nBal: " + info[0] + "UP\nAC: " + info[1])
+        except:
+            await interaction.followup.send("Process Failed: Missing player ID")
     else:
         await interaction.followup.send("This account has not been linked yet.")
+
+# teambal command
+@tree.command(name="teambal", description="View a team's Balance and AC Status", guild=discord.Object(id=guild))
+@app_commands.choices(team=[
+    app_commands.Choice(name="UCD Dublin", value="1"),
+    app_commands.Choice(name="Ulsan Hyundai FC", value="2"),
+    app_commands.Choice(name="Dinamo Zagreb", value="3"),
+    app_commands.Choice(name="TSG Hoffenheim", value="4"),
+    app_commands.Choice(name="Inter Miami CF", value="5"),
+    app_commands.Choice(name="Sporting KC", value="6"),
+    app_commands.Choice(name="Manchester United", value="7"),
+    app_commands.Choice(name="AC Milan", value="8"),
+    ])
+async def viewbal(interaction: discord.Interaction, team: app_commands.Choice[str]):
+    await interaction.response.defer()
+    if (interaction.channel_id == general):
+        await interaction.followup.send("Go to <#" + str(botcommands) + ">")
+    else:
+        try:
+            value = grab_teambal(team.value)
+            text = ""
+            current = 0
+            players = value.split(":")
+            for i in players:
+                info = i.split(",")
+                if current > 0:
+                    text += "\n"
+                text += "**" + info[6] + " (" + info[0] + ")** | Bal: **" + info[4] + "UP** AC: **"  + info[5] + "**"
+                current += 1
+            teamembed = discord.Embed(title=(team.name + " (" + team.value + ")"), description=text)
+            teamembed.set_footer(text=("Requested by " + interaction.user.name))
+            await interaction.followup.send(embed=teamembed)
+        except:
+            await interaction.followup.send("Process Failed")
 
 client.run(get_token())

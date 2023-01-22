@@ -12,4 +12,12 @@ def grab_bal(pid):
         value = "0,0,Process Failed"
     return value
 
+def grab_teambal(tid):
+    ws = sh.worksheet('tid_bot')
+    try:
+        value = ws.cell(int(tid)+1,2).value
+    except:
+        value = "0,0,0,0,0,0,Error"
+    return value
+
 print(grab_bal(22))
