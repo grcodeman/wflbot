@@ -23,7 +23,7 @@ botcommands = get_botcommands()
 # for stats
 default_season = 1
 
-link_perms = ["395724838620102658","1002315735730770060"]
+link_perms = ["395724838620102658","1002315735730770060","410252795757723650"]
 
 class aclient(discord.Client):
     def __init__(self):
